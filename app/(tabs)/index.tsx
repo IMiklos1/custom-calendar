@@ -1,57 +1,85 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import AddRoundButton from '@/components/buttons/AddRoundButton';
+import EventListItem from '@/components/event/EventListItem';
+import { auth } from '@/firebaseConfig';
+import { Event } from '@/models/event'; // Adjust the import path as necessary
+import eventService from '@/services/event.service';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Calendar } from 'react-native-calendars'; // Ensure this is the correct library
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selected, setSelected] = useState('');
+  const username = auth.currentUser?.email || 'Guest';
+  const [text, setText] = useState(''); // Initialize text state
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const userId = auth.currentUser?.uid;
+        if (!userId) return;
+        const fetchedEvents = await eventService.getAllEvents(userId);
+        setEvents(fetchedEvents as Event[]);
+      } catch (error) {
+        console.error('Failed to load events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" />;
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Calendar
+          onDayPress={day => {
+            setSelected(day.dateString);
+          }}
+          markedDates={{
+            [selected]: { selected: true, disableTouchEvent: true, selectedColor: 'orange' }
+          }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <Text style={styles.titleContainer}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{username}</Text>
+          <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{text}</Text>
+          <TextInput
+            placeholder="Email"
+            value={text}
+            autoCapitalize="none"
+            style={styles.input}
+          />
+        </Text>
+
+        {events.map(event => (
+        <EventListItem
+          key={event.id}
+          event={event}
+          onPress={function():void{
+            router.push({pathname: '/others/edit', params: { eventId: event.id }
+            });
+          }}
+        />
+      ))}
+
+      </ScrollView>
+      <View style={{ position: 'absolute', bottom: 20, alignSelf: 'center' }}>
+        <AddRoundButton
+          onPress={function (): void {
+            router.push('/others/add');
+          }}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -72,4 +100,57 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
+  headerImage: {
+    height: 150, // Adjust the height as needed
+    width: 150,  // Adjust the width as needed
+    resizeMode: 'contain', // Optional: Adjust based on your image requirements
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
+
