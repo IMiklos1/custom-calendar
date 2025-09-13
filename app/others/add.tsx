@@ -3,6 +3,7 @@ import { Event } from '@/models/event';
 import { User } from '@/models/user'; // Adjust path if needed
 import eventService from '@/services/event.service';
 import userService from '@/services/user.service';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { getAuth } from 'firebase/auth';
 import React, { useState } from 'react';
@@ -10,8 +11,10 @@ import { Alert, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } fr
 import uuid from 'react-native-uuid';
 
 const AddEventPage: React.FC = () => {
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState<Date | null>(null);
   const [description, setDescription] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
@@ -24,7 +27,7 @@ const AddEventPage: React.FC = () => {
   const [isReported, setIsReported] = useState(false);
   const [isFlagged, setIsFlagged] = useState(false);
 
-    const router = useRouter();
+  const router = useRouter();
 
   const handleSubmit = async () => {
     const auth = getAuth();
@@ -42,10 +45,14 @@ const AddEventPage: React.FC = () => {
         return;
       }
 
+      if (!date) {
+        throw new Error('Date is required');
+      }
+
       const newEvent: Event = {
         id: uuid.v4() as string, // Ensure you have uuid imported
         title,
-        date: new Date(date),
+        date: date, // Ensure date is set
         description,
         createdBy,
         isCompleted,
@@ -71,7 +78,7 @@ const AddEventPage: React.FC = () => {
       router.replace('/(tabs)'); // Redirect to the main screen
 
       setTitle('');
-      setDate('');
+      setDate(null);
       setDescription('');
       setIsCompleted(false);
       setIsPublic(false);
@@ -98,7 +105,7 @@ const AddEventPage: React.FC = () => {
   );
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
+    <ScrollView contentContainerStyle={{ padding: 20, marginTop: 40 }}>
       <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start', marginBottom: 20 }}>
         <HomeButton />
       </View>
@@ -113,13 +120,26 @@ const AddEventPage: React.FC = () => {
         placeholder="Enter event title"
       />
 
-      <Text>Date (YYYY-MM-DD):</Text>
-      <TextInput
-        style={styles.input}
-        value={date}
-        onChangeText={setDate}
-        placeholder="e.g. 2025-06-15"
-      />
+      <Text>Date:</Text>
+      <TouchableOpacity
+        style={[styles.input, { justifyContent: 'center', height: 50 }]}
+        onPress={() => setShowDatePicker(true)}
+      >
+        <Text>{date ? date.toLocaleDateString() : 'Select date'}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={date ?? new Date()}
+          mode="date"
+          display="default"
+          onChange={(_, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setDate(selectedDate); // keep it as Date
+            }
+          }}
+        />
+      )}
 
       <Text>Description:</Text>
       <TextInput

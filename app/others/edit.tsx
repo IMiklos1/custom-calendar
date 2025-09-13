@@ -7,7 +7,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { getAuth } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import uuid from 'react-native-uuid';
 
 const EditEventPage: React.FC = () => {
 
@@ -105,42 +104,34 @@ const EditEventPage: React.FC = () => {
                     isReported: isReported,
                     isFlagged: isFlagged,
                 };
-                
-            }
-                // event = {
-                    //     // id: uuid.v4() as string, // Ensure you have uuid imported
-                    //     title: title,
-                    //     description: description,
-                    //     isCompleted: isCompleted,
-                    //     isPublic: isPublic,
-                    //     participants: participants: [], // Extend in future if needed
-                    //     isShared: isShared,
-                    //     isCancelled: isCancelled,
-                    //     isFavorite: isFavorite,
-                    //     isPinned: isPinned,
-                    //     isHidden: isHidden,
-                    //     isBlocked: isBlocked,
-                    //     isReported: isReported,
-                    //     isFlagged: isFlagged,
-            // };
 
-            // event.modifications.push({
-                //     id: uuid.v4() as string,
-                //     eventId: event.id,
-                //     title: title,
-                //     date: new Date(),
-                //     description: description
-                // });
+            });
                 
-                console.log('Edited Event:', event);
-                
-                await eventService.updateEvent(user.uid, event.id, event);
-                
-                Alert.alert('Success', 'Event edited successfully!');
-                
-                router.replace('/(tabs)'); // Redirect to the main screen
-                
-                setTitle('');
+                if (!event) {
+                Alert.alert('Error', 'Event not loaded yet.');
+                return;
+            }
+            await eventService.updateEvent(user.uid, event.id, {
+                title,
+                date: new Date(date),
+                description,
+                isCompleted,
+                isPublic,
+                isShared,
+                isCancelled,
+                isFavorite,
+                isPinned,
+                isHidden,
+                isBlocked,
+                isReported,
+                isFlagged,
+            });
+
+            Alert.alert('Success', 'Event edited successfully!');
+
+            router.replace('/(tabs)'); // Redirect to the main screen
+
+            setTitle('');
             setDate('');
             setDescription('');
             setIsCompleted(false);
