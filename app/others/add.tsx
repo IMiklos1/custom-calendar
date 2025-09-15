@@ -1,5 +1,5 @@
 import HomeButton from '@/components/buttons/HomeButton';
-import { Event } from '@/models/event';
+import { CalendarEvent } from '@/models/event';
 import { User } from '@/models/user'; // Adjust path if needed
 import eventService from '@/services/event.service';
 import userService from '@/services/user.service';
@@ -49,7 +49,7 @@ const AddEventPage: React.FC = () => {
         throw new Error('Date is required');
       }
 
-      const newEvent: Event = {
+      const newEvent: CalendarEvent = {
         id: uuid.v4() as string, // Ensure you have uuid imported
         title,
         date: date, // Ensure date is set

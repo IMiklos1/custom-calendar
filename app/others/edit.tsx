@@ -1,5 +1,5 @@
 import HomeButton from '@/components/buttons/HomeButton';
-import { Event } from '@/models/event';
+import { CalendarEvent } from '@/models/event';
 import { User } from '@/models/user'; // Adjust path if needed
 import eventService from '@/services/event.service';
 import userService from '@/services/user.service';
@@ -26,7 +26,7 @@ const EditEventPage: React.FC = () => {
 
     const router = useRouter();
     const eventId = useLocalSearchParams().eventId;
-    const [event, setEvent] = useState<Event>();
+    const [event, setEvent] = useState<CalendarEvent>();
 
     useEffect(() => {
         const fetchEvent = async () => {

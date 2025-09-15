@@ -1,44 +1,33 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from "expo-router";
+import React from "react";
+import { StyleSheet } from "react-native";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function TabsLayout() {
   return (
-    <Tabs>
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
-      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+    <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: 'flex' } }}>
+      <Tabs.Screen name="calendar" options={{ title: "Calendar" }} />
+      <Tabs.Screen name="groups" options={{ title: "Groups" }} />
+      <Tabs.Screen name="events" options={{ title: "Events" }} />
+      <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+      {/* <Tabs.Screen name="home" options={{ title: "Home", tabBarButton: () => null }} /> */}
     </Tabs>
-    // <Tabs
-    //   screenOptions={{
-    //     tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-    //     headerShown: false,
-    //     tabBarButton: HapticTab,
-    //     tabBarBackground: TabBarBackground,
-    //     tabBarStyle: Platform.select({
-    //       ios: {
-    //         // Use a transparent background on iOS to show the blur effect
-    //         position: 'absolute',
-    //       },
-    //       default: {},
-    //     }),
-    //   }}>
-    //   <Tabs.Screen
-    //     name="index"
-    //     options={{
-    //       title: 'Home',
-    //       tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-    //     }}
-    //   />
-    //   <Tabs.Screen
-    //     name="explore"
-    //     options={{
-    //       title: 'Explore',
-    //       tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-    //     }}
-    //   />
-    // </Tabs>
   );
+  // const { user, loading } = useAuth();
+  // if (loading) {
+  //   return null; // or <LoadingScreen />
+  // }
+  // // if (!user) return <Redirect href="/(auth)/sign-in" />;
+
+  // if(!user) {console.log("No user, redirecting to sign-in");}
+  // if(user) {console.log("User found:", user.email);}
+
+  // return <Stack screenOptions={{ headerShown: false }} />;
+
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

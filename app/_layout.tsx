@@ -1,32 +1,24 @@
-import { useFonts } from 'expo-font';
-import { Slot } from 'expo-router';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-import Splash from './splash';
+import { useAuth } from "@/hooks/useAuth";
+import { Redirect, Stack } from "expo-router";
+import React from "react";
+// import LoadingScreen from "./loading";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+ const { user, loading } = useAuth();
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+  if (loading) {
+    return null; // or <LoadingScreen />
   }
 
   return (
-    <>
-      <Splash />
-      <Slot />
-    </>
-    // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    //   <Stack>
-    //     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    //     <Stack.Screen name="+not-found" />
-    //   </Stack>
-    //   <StatusBar style="auto" />
-    // </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* Always declare both route groups */}
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+      {/* Add redirect logic here */}
+      {!user && <Redirect href="/(auth)/sign-in" />}
+    </Stack>
   );
+
 }

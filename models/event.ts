@@ -1,32 +1,15 @@
-import { User } from "./user";
+import { Timestamp } from "firebase/firestore";
 
-export interface Event {
-  id: string;
-  title: string;
-  date: Date;
-  description: string;
-  createdBy: User;
-  isCompleted: boolean;
-  modifications:Modification[];
-  isPublic: boolean;
-  participants: User[];
-  isShared: boolean;
-  isCancelled: boolean;
-  isFavorite: boolean;
-  isPinned: boolean;
-  isHidden: boolean;
-  isBlocked: boolean;
-  isReported: boolean;
-  isFlagged: boolean;
-}
-
-export interface Modification {
+export interface CalendarEvent {
   id?: string;
-  eventId?: string;
-  title?: string;
-  date?: Date;
+  title: string;
   description?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  isDeleted?: boolean;
+  location?: string;
+  startTime: Timestamp;
+  endTime: Timestamp;
+  allDay?: boolean;
+  createdBy: string; // userId
+  participants: string[]; // userIds
+  reminders?: number[]; // minutes before event
+  createdAt: Timestamp;
 }

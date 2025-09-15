@@ -1,19 +1,10 @@
+import { Timestamp } from 'firebase/firestore';
+
 export interface User {
-    id: string;
-    name: string;
-    email: string;
-    createdAt: string;
+  id?: string; // Firebase Auth UID
+  name: string;
+  email: string;
+  photoUrl?: string;
+  groups?: string[]; // optional, list of group IDs
+  createdAt: Timestamp;
 }
-
-export interface Group {
-    id: string;
-    name: string;
-    description: string;
-    createdAt: string;
-    members: User[];
-    owner: User;
-    events: Event[];
-    isPublic: boolean;
-    joinRequests: User[];
-}
-
