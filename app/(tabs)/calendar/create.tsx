@@ -33,7 +33,7 @@ export default function CreateEvent() {
     resolver: zodResolver(formSchema),
   });
 
-  const date = watch("date");
+  // const date = watch("date");
   const [showPicker, setShowPicker] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {

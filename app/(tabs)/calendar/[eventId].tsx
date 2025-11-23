@@ -24,6 +24,7 @@ export default function EventDetails() {
 
   return (
     <View style={styles.container}>
+      <Button title="Edit Event" onPress={() => router.push(`/calendar/${event.id}/edit`)} />
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>{event.date.toDateString()}</Text>
       <Text style={styles.description}>{event.description}</Text>
