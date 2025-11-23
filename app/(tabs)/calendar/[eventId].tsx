@@ -1,37 +1,56 @@
-import { CalendarEvent } from "@/models/event";
+
 import { EventService } from "@/services/event.service";
-import { RelativePathString, useLocalSearchParams, useRouter } from "expo-router";
+import { Event } from "@/types/zodSchemas";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
 
 export default function EventDetails() {
-  const { eventId } = useLocalSearchParams<{ eventId: string }>();
+  const params = useLocalSearchParams();
   const router = useRouter();
-  const [event, setEvent] = useState<CalendarEvent | null>(null);
-  const eventService: EventService = new EventService();
+  const [event, setEvent] = useState<Event | null>(null);
+
+  async function fetchEvent() {
+    if (!params.eventId) return;
+    const fetchedEvent = await EventService.getById(params.eventId as string);
+    setEvent(fetchedEvent);
+  }
 
   useEffect(() => {
-    const groupId = "defaultGroupId"; // replace with actual selected group
-    eventService.getEvent(groupId, eventId).then(setEvent);
-  }, [eventId]);
+    fetchEvent();
+  }, []);
 
   if (!event) return <Text>Loading...</Text>;
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{event.title}</Text>
-      <Text>{event.description}</Text>
-      <Text>Location: {event.location}</Text>
-      <Text>
-        {event.startTime.toDate().toLocaleString()} - {event.endTime.toDate().toLocaleString()}
-      </Text>
-      <Text>Participants: {event.participants.join(", ")}</Text>
-      <Button title="Edit" onPress={() => router.push(`/calendar/${event.id}/edit` as RelativePathString)} />
+      <Text style={styles.date}>{event.date.toDateString()}</Text>
+      <Text style={styles.description}>{event.description}</Text>
+      <Button title="Go Back" onPress={() => router.back()} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 20, fontWeight: "700", marginBottom: 8 },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  date: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 20,
+  },
 });

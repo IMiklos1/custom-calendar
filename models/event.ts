@@ -1,15 +1,21 @@
-import { Timestamp } from "firebase/firestore";
+import { Notification } from "./notification";
 
-export interface CalendarEvent {
-  id?: string;
+export interface Event {
+  id: string;                     
   title: string;
   description?: string;
+  date: Date;
   location?: string;
-  startTime: Timestamp;
-  endTime: Timestamp;
-  allDay?: boolean;
-  createdBy: string; // userId
-  participants: string[]; // userIds
-  reminders?: number[]; // minutes before event
-  createdAt: Timestamp;
+
+  creatorId: string;              
+  groupId?: string;               
+
+  isGroupEvent: boolean;
+  participants: string[];         
+  invitedUserIds: string[];       
+
+  notifications?: Notification[];
+
+  createdAt: Date;
+  updatedAt?: Date;
 }

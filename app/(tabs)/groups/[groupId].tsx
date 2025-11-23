@@ -1,5 +1,5 @@
 import { Group } from "@/models/group";
-import { GroupService } from "@/services/group.service";
+import { GroupServiceExtended } from "@/services/group.service";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
@@ -8,6 +8,7 @@ export default function GroupDetails() {
   const { groupId } = useLocalSearchParams<{ groupId: string }>();
   const router = useRouter();
   const [group, setGroup] = useState<Group | null>(null);
+  const GroupService = new GroupServiceExtended();
 
   useEffect(() => {
     GroupService.getById(groupId).then(setGroup);
